@@ -1,10 +1,17 @@
 use anchor_lang::prelude::*;
-use crate::state::Escrow;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer, CloseAccount};
+
+use crate::state::Escrow;
 
 #[derive(Accounts)]
 pub struct Refund<'info> {
-    #[account(mut, has_one = maker, close = maker)]
+    #[account(
+        mut,
+        has_one = maker,
+        close = maker,
+        seeds = [b"escrow", &escrow.seed.to_le_bytes()],
+        bump = escrow.bump
+    )]
     pub escrow: Account<'info, Escrow>,
 
     #[account(mut)]
@@ -30,10 +37,15 @@ pub struct Refund<'info> {
 pub fn handler(ctx: Context<Refund>) -> Result<()> {
     let escrow = &ctx.accounts.escrow;
 
-    let seeds = &[b"escrow", &escrow.seed.to_le_bytes(), &[escrow.bump]];
+    // ✅ PDA signer seeds
+    let seeds = &[
+        b"escrow",
+        &escrow.seed.to_le_bytes(),
+        &[escrow.bump],
+    ];
     let signer = &[&seeds[..]];
 
-    // Transfer Token A back to maker
+    // ✅ Transfer ALL Token A back to maker
     let cpi_accounts = Transfer {
         from: ctx.accounts.vault_token_account.to_account_info(),
         to: ctx.accounts.maker_token_account.to_account_info(),
@@ -49,16 +61,20 @@ pub fn handler(ctx: Context<Refund>) -> Result<()> {
         ctx.accounts.vault_token_account.amount,
     )?;
 
-    // Close vault account
-    token::close_account(CpiContext::new_with_signer(
-        ctx.accounts.token_program.to_account_info(),
-        CloseAccount {
-            account: ctx.accounts.vault_token_account.to_account_info(),
-            destination: ctx.accounts.maker.to_account_info(),
-            authority: ctx.accounts.escrow.to_account_info(),
-        },
-        signer,
-    ))?;
+    // ✅ Close vault account (send rent back to maker)
+    let close_accounts = CloseAccount {
+        account: ctx.accounts.vault_token_account.to_account_info(),
+        destination: ctx.accounts.maker.to_account_info(),
+        authority: ctx.accounts.escrow.to_account_info(),
+    };
+
+    token::close_account(
+        CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            close_accounts,
+            signer,
+        ),
+    )?;
 
     Ok(())
 }

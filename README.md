@@ -52,7 +52,7 @@ tests/
   anchor_escrow_tests.rs  # Tests for all instructions
 Anchor.toml
 
-![Challenge Completion](./IMG_20260324_204246_658)
+![Challenge Completion](./IMG_20260324_204246_658.jpg)
 
 
 **Submission & Verification**

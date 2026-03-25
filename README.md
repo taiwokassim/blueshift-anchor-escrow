@@ -22,8 +22,8 @@ Debugging deployment issues, including DeclaredProgramIdMismatch errors.
 Clone the repository:
 Bash
 Copy code
-git clone https://github.com/<your_username>/<repo_name>.git
-cd <repo_name>
+git clone https://github.com/taiwokassim/blueshift-anchor-escrow.git
+
 
 **Install dependencies**:
 Bash

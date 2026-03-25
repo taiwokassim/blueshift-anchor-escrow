@@ -52,6 +52,9 @@ tests/
   anchor_escrow_tests.rs  # Tests for all instructions
 Anchor.toml
 
+![Challenge Completion](./IMG_20260324_204246_658)
+
+
 **Submission & Verification**
 Wallet for NFT: DCwqftGn7mtRZj6UT1VZikUfpUbLBiecZtwAE1S5STsG
 Twitter thread sharing my experience: 

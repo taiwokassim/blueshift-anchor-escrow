@@ -4,7 +4,7 @@ mod errors;
 mod instructions;
 use instructions::*; // brings in make, take, refund
 
-// Replace with your Devnet program ID after deployment
+//Program ID
 declare_id!("22222222222222222222222222222222222222222222");
 
 #[program]
